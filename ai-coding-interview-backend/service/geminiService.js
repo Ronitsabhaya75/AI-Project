@@ -1,6 +1,6 @@
-const axios = require("axios");
+import axios from "axios";
 
-exports.analyzeCode = async (code, question) => {
+export const analyzeCode = async (code, question) => {
   try {
     console.log("🔹 Sending code to AI:", { code, question });
 

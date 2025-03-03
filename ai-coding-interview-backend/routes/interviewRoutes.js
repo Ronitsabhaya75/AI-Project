@@ -1,9 +1,10 @@
-const express = require("express");
+import express from "express";
+import interviewController from "../controller/interviewController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const interviewController = require("../controller/interviewController");
-const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/start", authMiddleware, interviewController.startInterview);
 router.post("/submit", authMiddleware, interviewController.submitCode);
 
-module.exports = router;
+export default router;

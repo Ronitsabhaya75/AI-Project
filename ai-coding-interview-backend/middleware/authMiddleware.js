@@ -1,6 +1,6 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
-module.exports = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const token = req.header("Authorization");
 
   if (!token) {
@@ -15,6 +15,8 @@ module.exports = (req, res, next) => {
     res.status(400).json({ message: "Invalid token!" });
   }
 };
+
+export default authMiddleware;
 
 
 // Compare this snippet from ai-coding-interview/ai-coding-interview-backend/routes/questionRoutes.js:

@@ -1,18 +1,23 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import db from "./config/database.js";
+import { WebSocketServer } from "ws";
+import authRoutes from "./routes/authRoutes.js";
+import questionRoutes from "./routes/questionRoutes.js";
+import interviewRoutes from "./routes/interviewRoutes.js";
+
+dotenv.config();
 const app = express();
-const db = require("./config/database");
-const { WebSocketServer } = require("ws");
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/questions", require("./routes/questionRoutes"));
-app.use("/api/interviews", require("./routes/interviewRoutes"));
+app.use("/api/auth", authRoutes);
+app.use("/api/questions", questionRoutes);
+app.use("/api/interviews", interviewRoutes);
 
 // WebSocket for real-time feedback
 const wss = new WebSocketServer({ port: 8080 });

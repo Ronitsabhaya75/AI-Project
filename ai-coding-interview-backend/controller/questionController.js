@@ -1,57 +1,58 @@
-const pool = require("../config/database");
+import db from "../config/database.js";
 
-exports.addQuestion = async (req, res) => {
-  const { question_text, difficulty, company_tag } = req.body;
+const questionController = {
+  addQuestion: async (req, res) => {
+    const { question_text, difficulty, company_tag } = req.body;
 
-  if (!question_text || !difficulty || !company_tag) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
+    if (!question_text || !difficulty || !company_tag) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
 
-  try {
-    await pool.query(
-      "INSERT INTO questions (question_text, difficulty, company_tag) VALUES ($1, $2, $3)",
-      [question_text, difficulty, company_tag]
-    );
-    res.status(201).json({ message: "Question added successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Error adding question", details: error.message });
+    try {
+      await db.none(
+        "INSERT INTO questions (question_text, difficulty, company_tag) VALUES ($1, $2, $3)",
+        [question_text, difficulty, company_tag]
+      );
+      res.status(201).json({ message: "Question added successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Error adding question", details: error.message });
+    }
+  },
+
+  getAllQuestions: async (req, res) => {
+    try {
+      const questions = await db.any("SELECT * FROM questions");
+      res.status(200).json(questions);
+    } catch (error) {
+      res.status(500).json({ error: "Error fetching questions", details: error.message });
+    }
+  },
+
+  getQuestionsByDifficulty: async (req, res) => {
+    const { level } = req.params;
+    try {
+      const questions = await db.any(
+        "SELECT * FROM questions WHERE difficulty = $1",
+        [level]
+      );
+      res.status(200).json(questions);
+    } catch (error) {
+      res.status(500).json({ error: "Error fetching questions", details: error.message });
+    }
+  },
+
+  getQuestionsByCompany: async (req, res) => {
+    const { tag } = req.params;
+    try {
+      const questions = await db.any(
+        "SELECT * FROM questions WHERE company_tag = $1",
+        [tag]
+      );
+      res.status(200).json(questions);
+    } catch (error) {
+      res.status(500).json({ error: "Error fetching questions", details: error.message });
+    }
   }
 };
 
-exports.getAllQuestions = async (req, res) => {
-  try {
-    const { rows } = await pool.query("SELECT * FROM questions");
-    res.status(200).json(rows);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching questions", details: error.message });
-  }
-};
-
-exports.getQuestionsByDifficulty = async (req, res) => {
-  const { level } = req.params;
-  try {
-    const { rows } = await pool.query(
-      "SELECT * FROM questions WHERE difficulty = $1",
-      [level]
-    );
-    res.status(200).json(rows);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching questions", details: error.message });
-  }
-};
-
-exports.getQuestionsByCompany = async (req, res) => {
-  const { tag } = req.params;
-  try {
-    const { rows } = await pool.query(
-      "SELECT * FROM questions WHERE company_tag = $1",
-      [tag]
-    );
-    res.status(200).json(rows);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching questions", details: error.message });
-  }
-};
-
-
-module.exports = exports;
+export default questionController;

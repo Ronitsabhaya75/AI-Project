@@ -1,8 +1,8 @@
-const db = require("../config/database");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import db from "../config/database.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-const signupUser = async (req, res) => {
+export const signupUser = async (req, res) => {
   try {
     console.log("Received Data:", req.body);
     const { email, password } = req.body;
@@ -36,8 +36,7 @@ const signupUser = async (req, res) => {
   }
 };
 
-
-const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
     try {
       console.log("Received Data:", req.body);
       const { email, password } = req.body;
@@ -73,25 +72,21 @@ const loginUser = async (req, res) => {
     }
   };
   
-
-const getProfile = async (req, res) => {
+export const getProfile = async (req, res) => {
   try {
       if (!req.user || !req.user.id) {  // Ensure req.user is properly set
           return res.status(401).json({ error: "Unauthorized. Token is missing or invalid." });
       }
 
-      const user = await pool.query("SELECT id, email FROM users WHERE id = $1", [req.user.id]);
+      const user = await db.oneOrNone("SELECT id, email FROM users WHERE id = $1", [req.user.id]);
 
-      if (user.rows.length === 0) {
+      if (!user) {
           return res.status(404).json({ error: "User not found" });
       }
 
-      res.status(200).json({ message: "Profile retrieved successfully", user: user.rows[0] });
+      res.status(200).json({ message: "Profile retrieved successfully", user });
   } catch (err) {
       console.error("❌ Error retrieving profile:", err);
       res.status(500).json({ error: "Internal server error" });
   }
 };
-
-
-module.exports = { signupUser, loginUser, getProfile };
