@@ -15,6 +15,7 @@ const questionController = {
       );
       res.status(201).json({ message: "Question added successfully" });
     } catch (error) {
+      console.error("Error adding question:", error);
       res.status(500).json({ error: "Error adding question", details: error.message });
     }
   },
@@ -24,6 +25,7 @@ const questionController = {
       const questions = await db.any("SELECT * FROM questions");
       res.status(200).json(questions);
     } catch (error) {
+      console.error("Error fetching questions:", error);
       res.status(500).json({ error: "Error fetching questions", details: error.message });
     }
   },
@@ -37,6 +39,7 @@ const questionController = {
       );
       res.status(200).json(questions);
     } catch (error) {
+      console.error("Error fetching questions by difficulty:", error);
       res.status(500).json({ error: "Error fetching questions", details: error.message });
     }
   },
@@ -50,6 +53,7 @@ const questionController = {
       );
       res.status(200).json(questions);
     } catch (error) {
+      console.error("Error fetching questions by company:", error);
       res.status(500).json({ error: "Error fetching questions", details: error.message });
     }
   }

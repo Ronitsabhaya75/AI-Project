@@ -37,56 +37,56 @@ export const signupUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-    try {
-      console.log("Received Data:", req.body);
-      const { email, password } = req.body;
-  
-      if (!email || !password) {
-        return res.status(400).json({ error: "Email and password are required" });
-      }
-  
-      // Find user in database
-      const user = await db.oneOrNone("SELECT * FROM users WHERE email = $1", [email]);
-  
-      if (!user) {
-        return res.status(401).json({ error: "Invalid email or password" });
-      }
-  
-      // Compare passwords
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        return res.status(401).json({ error: "Invalid email or password" });
-      }
-  
-      // Generate JWT Token
-      const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-  
-      console.log("User logged in successfully:", user.email);
-  
-      res.json({ message: "Login successful", token });
-    } catch (error) {
-      console.error("Error during login:", error);
-      res.status(500).json({ error: "Login failed", details: error.message });
+  try {
+    console.log("Received Data:", req.body);
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
     }
-  };
-  
+
+    // Find user in database
+    const user = await db.oneOrNone("SELECT * FROM users WHERE email = $1", [email]);
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Compare passwords
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Generate JWT Token
+    const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    console.log("User logged in successfully:", user.email);
+
+    res.json({ message: "Login successful", token });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ error: "Login failed", details: error.message });
+  }
+};
+
 export const getProfile = async (req, res) => {
   try {
-      if (!req.user || !req.user.id) {  // Ensure req.user is properly set
-          return res.status(401).json({ error: "Unauthorized. Token is missing or invalid." });
-      }
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({ error: "Unauthorized. Token is missing or invalid." });
+    }
 
-      const user = await db.oneOrNone("SELECT id, email FROM users WHERE id = $1", [req.user.id]);
+    const user = await db.oneOrNone("SELECT id, email FROM users WHERE id = $1", [req.user.userId]);
 
-      if (!user) {
-          return res.status(404).json({ error: "User not found" });
-      }
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-      res.status(200).json({ message: "Profile retrieved successfully", user });
+    res.status(200).json({ message: "Profile retrieved successfully", user });
   } catch (err) {
-      console.error("❌ Error retrieving profile:", err);
-      res.status(500).json({ error: "Internal server error" });
+    console.error("❌ Error retrieving profile:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

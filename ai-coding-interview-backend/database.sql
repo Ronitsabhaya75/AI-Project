@@ -1,6 +1,6 @@
-CREATE DATABASE ai_coding_interview;
+CREATE DATABASE ai_coding_interview_test;
 
-\c ai_coding_interview
+\c ai_coding_interview_test
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,

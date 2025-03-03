@@ -11,7 +11,7 @@ const interviewController = {
         return res.status(400).json({ error: "Difficulty level is required" });
       }
 
-      // Correct usage of db.oneOrNone
+      // Get a random question of the specified difficulty
       const question = await db.oneOrNone(
         "SELECT * FROM questions WHERE difficulty = $1 ORDER BY RANDOM() LIMIT 1",
         [difficulty]
